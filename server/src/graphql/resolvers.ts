@@ -1,23 +1,50 @@
-import { IResolvers } from "apollo-server-express";
-import User from "../models/User";
-import Item from "../models/Item";
+import User, { IUser } from "../models/User";
+import Item, { IItem } from "../models/Item";
 
-export const resolvers: IResolvers = {
+export const resolvers = {
   Query: {
-    allUsers: async () => await User.find({}),
-    userById: async (_, { id }) => await User.findById(id),
-    allItems: async () => await Item.find({}).populate("owner"),
-    itemById: async (_, { id }) => await Item.findById(id).populate("owner"),
+    allUsers: async (): Promise<IUser[]> => {
+      return User.find({});
+    },
+    userById: async (_: any, { id }: { id: string }): Promise<IUser | null> => {
+      return User.findById(id);
+    },
+    allItems: async (): Promise<IItem[]> => {
+      return Item.find({}).populate("owner");
+    },
+    itemById: async (_: any, { id }: { id: string }): Promise<IItem | null> => {
+      return Item.findById(id).populate("owner");
+    },
+    // TODO: other queries
   },
   Mutation: {
-    createUser: async (_, { email, password, contactInfo }) => {
+    createUser: async (
+      _: any,
+      {
+        email,
+        password,
+        contactInfo,
+      }: { email: string; password: string; contactInfo: string }
+    ): Promise<IUser> => {
       const newUser = new User({ email, password, contactInfo });
-      return await newUser.save();
+      return newUser.save();
     },
     createItem: async (
-      _,
-      { name, description, boughtFor, usedFor, ownerId }
-    ) => {
+      _: any,
+      {
+        name,
+        description,
+        boughtFor,
+        usedFor,
+        ownerId,
+      }: {
+        name: string;
+        description?: string;
+        boughtFor: number;
+        usedFor: string;
+        ownerId: string;
+      }
+    ): Promise<IItem> => {
       const newItem = new Item({
         name,
         description,
@@ -25,14 +52,9 @@ export const resolvers: IResolvers = {
         usedFor,
         owner: ownerId,
       });
-      return await newItem.save();
+      return newItem.save();
     },
-    // TODO: Other mutations implementations
+    // TODO: other mutations
   },
-  User: {
-    items: async (user) => await Item.find({ owner: user.id }),
-  },
-  Item: {
-    owner: async (item) => await User.findById(item.owner),
-  },
+  // TODO: any other necessary resolvers for custom types
 };

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --exec './node_modules/.bin/ts-node' src/app.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +15,9 @@
     "express": "^4.19.2",
     "graphql": "^16.8.1",
     "mongoose": "^8.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "ts-node": "^10.9.2"
   }
 }

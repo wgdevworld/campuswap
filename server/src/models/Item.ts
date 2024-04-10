@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IUser } from "./User";
 
-interface IItem {
+export interface IItem {
   name: string;
   description?: string;
   boughtFor: number;
