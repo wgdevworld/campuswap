@@ -17,11 +17,21 @@ export const typeDefs = gql`
     owner: User!
   }
 
+  type Request {
+    id: ID!
+    fromUser: User!
+    toUser: User!
+    message: String
+    items: [Item!]!
+  }
+
   type Query {
-    allUsers: [User!]!
-    userById(id: ID!): User
-    allItems: [Item!]!
-    itemById(id: ID!): Item
+    fetchAllUsers: [User!]!
+    fetchUserById(id: ID!): User
+    fetchAllItems: [Item!]!
+    fetchItemById(id: ID!): Item
+    fetchAllRequests: [Request!]!
+    fetchRequestById(id: ID!): Request
   }
 
   type Mutation {
@@ -33,5 +43,14 @@ export const typeDefs = gql`
       usedFor: String!
       ownerId: ID!
     ): Item!
+    createRequest(
+      fromUserId: ID!
+      toUserId: ID!
+      message: String
+      itemIds: [ID!]!
+    ): Request!
+    deleteUser(id: ID!): User!
+    deleteItem(id: ID!): Item!
+    deleteRequest(id: ID!): Request!
   }
 `;

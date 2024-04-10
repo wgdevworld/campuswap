@@ -1,7 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 import { IUser } from "./User";
 
 export interface IItem {
+  _id: Types.ObjectId;
   name: string;
   description?: string;
   boughtFor: number;
