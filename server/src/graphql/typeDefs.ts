@@ -32,6 +32,8 @@ export const typeDefs = gql`
     fetchItemById(id: ID!): Item
     fetchAllRequests: [Request!]!
     fetchRequestById(id: ID!): Request
+    fetchSentRequests(userId: ID!): [Request!]!
+    fetchReceivedRequests(userId: ID!): [Request!]!
   }
 
   type Mutation {

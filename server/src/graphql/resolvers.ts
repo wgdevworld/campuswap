@@ -46,6 +46,31 @@ export const resolvers = {
           populate: { path: "owner" },
         });
     },
+    fetchSentRequests: async (
+      _: any,
+      { userId }: { userId: string }
+    ): Promise<IRequest[]> => {
+      return Request.find({ fromUser: userId })
+        .populate("fromUser")
+        .populate("toUser")
+        .populate({
+          path: "items",
+          populate: { path: "owner" },
+        });
+    },
+
+    fetchReceivedRequests: async (
+      _: any,
+      { userId }: { userId: string }
+    ): Promise<IRequest[]> => {
+      return Request.find({ toUser: userId })
+        .populate("fromUser")
+        .populate("toUser")
+        .populate({
+          path: "items",
+          populate: { path: "owner" },
+        });
+    },
   },
   Mutation: {
     //USER mutations
