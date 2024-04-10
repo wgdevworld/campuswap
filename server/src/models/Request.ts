@@ -6,14 +6,16 @@ export interface IRequest {
   fromUser: IUser["_id"];
   toUser: IUser["_id"];
   message?: string;
-  items: Types.ObjectId[];
+  wantItem: Types.ObjectId;
+  offeredItems: Types.ObjectId[];
 }
 
 const requestSchema = new Schema<IRequest>({
   fromUser: { type: Schema.Types.ObjectId, ref: "User" },
   toUser: { type: Schema.Types.ObjectId, ref: "User" },
   message: { type: String },
-  items: [{ type: Schema.Types.ObjectId, ref: "Item", required: true }],
+  wantItem: {type: Schema.Types.ObjectId, ref: "Item"},
+  offeredItems: [{ type: Schema.Types.ObjectId, ref: "Item", required: true }],
 });
 
 const Request = model<IRequest>("Request", requestSchema);

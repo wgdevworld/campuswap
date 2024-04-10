@@ -22,7 +22,8 @@ export const typeDefs = gql`
     fromUser: User!
     toUser: User!
     message: String
-    items: [Item!]!
+    wantItem: Item!
+    offeredItems: [Item!]!
   }
 
   type Query {
@@ -49,7 +50,8 @@ export const typeDefs = gql`
       fromUserId: ID!
       toUserId: ID!
       message: String
-      itemIds: [ID!]!
+      wantItemId: ID!
+      offeredItemIds: [ID!]!
     ): Request!
     deleteUser(id: ID!): User!
     deleteItem(id: ID!): Item!

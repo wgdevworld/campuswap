@@ -111,7 +111,7 @@ export const resolvers = {
         usedFor: string;
         ownerId: string;
       }
-    ): Promise<IItem> => {
+    ): Promise<IItem | null> => {
       const newItem = new Item({
         name,
         description,
@@ -119,7 +119,12 @@ export const resolvers = {
         usedFor,
         owner: ownerId,
       });
-      return newItem.save();
+      await newItem.save();
+      const populatedItem = await Item.findById(newItem._id).populate("owner");
+      if (!populatedItem) {
+        throw new Error("Item could not be found after saving.");
+      }
+      return populatedItem;
     },
     deleteItem: async (
       _: any,
@@ -138,36 +143,49 @@ export const resolvers = {
         fromUserId,
         toUserId,
         message,
-        itemIds,
+        wantItemId,
+        offeredItemIds,
       }: {
         fromUserId: string;
         toUserId: string;
         message?: string;
-        itemIds: string[];
+        wantItemId: string;
+        offeredItemIds: string[];
       }
-    ): Promise<IRequest> => {
+    ): Promise<IRequest | null> => {
       const fromUser = await User.findById(fromUserId);
       const toUser = await User.findById(toUserId);
       if (!fromUser || !toUser) {
         throw new Error("User not found");
       }
-      const items = await Item.find({
-        _id: { $in: itemIds },
+      const wantItem = await Item.findById(wantItemId);
+      if (!wantItem) {
+        throw new Error("Requested item is unavailable!");
+      }
+      const offeredItems = await Item.find({
+        _id: { $in: offeredItemIds },
+        owner: fromUserId,
       });
-      if (items.length !== itemIds.length) {
+      if (offeredItems.length !== offeredItemIds.length) {
         throw new Error(
           "One or more items not found, or don't belong to the user"
         );
       }
-
       const newRequest = new Request({
         fromUser: fromUserId,
         toUser: toUserId,
         message: message,
-        items: itemIds,
+        wantItem: wantItemId,
+        offeredItems: offeredItemIds,
       });
 
-      return newRequest.save();
+      await newRequest.save();
+      const populatedRequest = await Request.findById(newRequest._id)
+        .populate("wantItem")
+        .populate("offeredItems")
+        .populate("fromUser")
+        .populate("toUser");
+      return populatedRequest;
     },
     deleteRequest: async (
       _: any,
