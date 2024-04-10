@@ -1,30 +1,54 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
   <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+    <b-navbar class="nav-bar" type="dark">
+      <b-navbar-brand href="/" class="nav-bar-text">CampuSwap</b-navbar-brand>
+      <b-navbar-nav class="nav-bar-button-container">
+        <b-button href="#" class="nav-bar-button">Post Items</b-button>
+        <b-button href="/requests" class="nav-bar-button"
+          >View Requests</b-button
+        >
+      </b-navbar-nav>
+    </b-navbar>
+
+    <router-view />
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.nav-bar {
+  background-color: var(--blue);
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.nav-bar-text {
+  margin-left: 1rem;
+  font-size: 2rem;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.nav-bar-button-container {
+  margin-left: auto;
+}
+.nav-bar-button {
+  margin-right: 1rem;
+  background-color: var(--blue);
+  border-color: var(--blue);
 }
 </style>
+
+<script setup lang="ts">
+import { provide } from "vue";
+import { DefaultApolloClient } from "@vue/apollo-composable";
+import {
+  ApolloClient,
+  createHttpLink,
+  InMemoryCache,
+} from "@apollo/client/core";
+
+const httpLink = createHttpLink({
+  uri: "http://localhost:4000/graphql",
+});
+const cache = new InMemoryCache();
+const apolloClient = new ApolloClient({
+  link: httpLink,
+  cache,
+});
+
+provide(DefaultApolloClient, apolloClient);
+</script>

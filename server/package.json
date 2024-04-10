@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "brew services start mongodb-community@7.0 ; nodemon --exec './node_modules/.bin/ts-node' src/app.ts",
-    "db stop": "brew services start mongodb-community@7.0"
+    "dbstop": "brew services stop mongodb-community@7.0"
   },
   "keywords": [],
   "author": "",
