@@ -29,6 +29,7 @@
   margin-right: 1rem;
   background-color: var(--blue);
   border-color: var(--blue);
+  font-size: 1.2rem;
 }
 </style>
 
