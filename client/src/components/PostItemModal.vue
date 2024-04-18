@@ -5,7 +5,9 @@
     hide-header-close
     @hide="handleClose"
     class="modal"
+    body-class="position-static"
   >
+    <b-overlay :show="isHandlePostLoading" no-wrap />
     <b-form>
       <div class="form-container">
         <div>
@@ -99,30 +101,24 @@ function handleClose() {
   emits("update:show", false);
 }
 
+const isHandlePostLoading = ref(false);
+
 async function handlePost() {
   //TODO: form validation
-  const formData = new FormData();
-  formData.append("file", form.value.photo);
-  const response = await fetch("/api/upload", {
-    method: "POST",
-    body: formData,
-  });
-
-  console.log(form.value);
-
-  if (!response.ok) {
-    console.error("File upload failed");
-    return;
-  }
-  const res = await response.json();
-  const imageUrl = res.imageUrl;
-
-  console.log(typeof imageUrl);
-
-  const { mutate: createItem } = useMutation(CREATE_ITEM_MUTATION);
+  isHandlePostLoading.value = true;
 
   //FIXME: change to current user after sessions
   try {
+    const formData = new FormData();
+    formData.append("file", form.value.photo);
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const res = await response.json();
+    const imageUrl = res.imageUrl;
+
+    const { mutate: createItem } = useMutation(CREATE_ITEM_MUTATION);
     const result = await createItem({
       name: form.value.name,
       description: form.value.description,
@@ -138,6 +134,8 @@ async function handlePost() {
     }
   } catch (e) {
     console.log(JSON.stringify(e, null, 2));
+  } finally {
+    isHandlePostLoading.value = false;
   }
 }
 
