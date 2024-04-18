@@ -38,7 +38,13 @@
         </div>
 
         <b-form-group
-          style="width: 50%; display: flex; align-items: center; justify-content: center; margin-left: 4%;"
+          style="
+            width: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 4%;
+          "
         >
           <div class="photo-upload" @click="onClickPhotoUpload">
             <div v-if="photoURL">
@@ -69,6 +75,8 @@
 
 <script setup>
 import { ref, defineProps, defineEmits, computed } from "vue";
+import { CREATE_ITEM_MUTATION } from "../control/ItemControl";
+import { useMutation } from "@vue/apollo-composable";
 
 const props = defineProps({
   show: Boolean,
@@ -91,7 +99,47 @@ function handleClose() {
   emits("update:show", false);
 }
 
-function handlePost() {}
+async function handlePost() {
+  //TODO: form validation
+  const formData = new FormData();
+  formData.append("file", form.value.photo);
+  const response = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  console.log(form.value);
+
+  if (!response.ok) {
+    console.error("File upload failed");
+    return;
+  }
+  const res = await response.json();
+  const imageUrl = res.imageUrl;
+
+  console.log(typeof imageUrl);
+
+  const { mutate: createItem } = useMutation(CREATE_ITEM_MUTATION);
+
+  //FIXME: change to current user after sessions
+  try {
+    const result = await createItem({
+      name: form.value.name,
+      description: form.value.description,
+      boughtFor: parseFloat(form.value.boughtFor),
+      usedFor: form.value.usedFor,
+      ownerId: "66160060b952d66f702877d7",
+      imageUrl: imageUrl,
+    });
+
+    if (result.data) {
+      console.log("Item created successfully", result.data);
+      handleClose();
+    }
+  } catch (e) {
+    console.log(JSON.stringify(e, null, 2));
+  }
+}
 
 const form = ref({
   name: "",

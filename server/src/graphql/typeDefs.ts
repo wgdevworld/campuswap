@@ -15,6 +15,7 @@ export const typeDefs = gql`
     boughtFor: Float!
     usedFor: String!
     owner: User!
+    imageUrl: String!
   }
 
   type Request {
@@ -45,6 +46,7 @@ export const typeDefs = gql`
       boughtFor: Float!
       usedFor: String!
       ownerId: ID!
+      imageUrl: String!
     ): Item!
     createRequest(
       fromUserId: ID!

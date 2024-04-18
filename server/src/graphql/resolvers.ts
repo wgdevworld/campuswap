@@ -104,12 +104,14 @@ export const resolvers = {
         boughtFor,
         usedFor,
         ownerId,
+        imageUrl,
       }: {
         name: string;
         description?: string;
         boughtFor: number;
         usedFor: string;
         ownerId: string;
+        imageUrl: string;
       }
     ): Promise<IItem | null> => {
       const newItem = new Item({
@@ -118,6 +120,7 @@ export const resolvers = {
         boughtFor,
         usedFor,
         owner: ownerId,
+        imageUrl: imageUrl,
       });
       await newItem.save();
       const populatedItem = await Item.findById(newItem._id).populate("owner");

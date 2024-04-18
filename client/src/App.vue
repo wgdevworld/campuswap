@@ -44,7 +44,10 @@
 
 <script setup lang="ts">
 import { provide, ref } from "vue";
-import { DefaultApolloClient } from "@vue/apollo-composable";
+import {
+  DefaultApolloClient,
+  provideApolloClient,
+} from "@vue/apollo-composable";
 import {
   ApolloClient,
   createHttpLink,
@@ -64,4 +67,5 @@ const apolloClient = new ApolloClient({
 });
 
 provide(DefaultApolloClient, apolloClient);
+provideApolloClient(apolloClient);
 </script>

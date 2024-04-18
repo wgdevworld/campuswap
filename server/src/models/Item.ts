@@ -8,6 +8,7 @@ export interface IItem {
   boughtFor: number;
   usedFor: string;
   owner: IUser["_id"];
+  imageUrl: string;
 }
 
 const itemSchema = new Schema<IItem>({
@@ -16,6 +17,7 @@ const itemSchema = new Schema<IItem>({
   boughtFor: { type: Number, required: true },
   usedFor: { type: String, required: true },
   owner: { type: Schema.Types.ObjectId, ref: "User" },
+  imageUrl: { type: String, required: true },
 });
 
 const Item = model<IItem>("Item", itemSchema);
