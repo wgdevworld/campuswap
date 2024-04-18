@@ -15,6 +15,11 @@
       </div>
     </div> -->
 
+    <RequestTradeModal
+      :show="showRequestTradeModal"
+      @update:show="showRequestTradeModal = $event"
+    />
+
     <b-row>
       <b-col
         cols="12"
@@ -40,7 +45,9 @@
               <div class="value">{{ item.usedFor }}</div>
             </div>
           </div>
-          <b-button class="button" block>Request trade</b-button>
+          <b-button @click="showRequestTradeModal = true" class="button" block
+            >Request trade</b-button
+          >
         </b-card>
       </b-col>
     </b-row>
@@ -79,11 +86,10 @@
 <script setup lang="ts">
 import { useQuery } from "@vue/apollo-composable";
 import { FETCH_ALL_ITEMS_QUERY } from "../control/ItemControl";
-import { watch } from "vue";
+import { ref } from "vue";
+import RequestTradeModal from "../components/RequestTradeModal.vue";
+
+const showRequestTradeModal = ref(false);
 
 const { result } = useQuery(FETCH_ALL_ITEMS_QUERY);
-
-watch(result, () => {
-  console.log(result.value.fetchAllItems);
-})
 </script>

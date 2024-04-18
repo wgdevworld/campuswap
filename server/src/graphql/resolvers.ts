@@ -24,6 +24,13 @@ export const resolvers = {
     ): Promise<IItem | null> => {
       return Item.findById(id).populate("owner");
     },
+    fetchItemsByUserId: async (
+      _: any,
+      { userId }: { userId: string }
+    ): Promise<IItem[]> => {
+      const items = await Item.find({ owner: userId }).populate("owner");
+      return items;
+    },
     //REQUEST queries
     fetchAllRequests: async (): Promise<IRequest[]> => {
       return Request.find({})

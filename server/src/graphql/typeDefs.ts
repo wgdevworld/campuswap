@@ -32,6 +32,7 @@ export const typeDefs = gql`
     fetchUserById(id: ID!): User
     fetchAllItems: [Item!]!
     fetchItemById(id: ID!): Item
+    fetchItemsByUserId(userId: ID!): [Item]
     fetchAllRequests: [Request!]!
     fetchRequestById(id: ID!): Request
     fetchSentRequests(userId: ID!): [Request!]!
