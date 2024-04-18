@@ -3,7 +3,12 @@
     <b-navbar class="nav-bar" type="dark">
       <b-navbar-brand href="/" class="nav-bar-text">CampuSwap</b-navbar-brand>
       <b-navbar-nav class="nav-bar-button-container">
-        <b-button href="#" class="nav-bar-button">Post Items</b-button>
+        <b-button
+          href="#"
+          class="nav-bar-button"
+          @click="showPostItemModal = true"
+          >Post Items</b-button
+        >
         <b-button href="/requests" class="nav-bar-button"
           >View Requests</b-button
         >
@@ -11,6 +16,10 @@
     </b-navbar>
 
     <router-view />
+    <PostItemModal
+      :show="showPostItemModal"
+      @update:show="showPostItemModal = $event"
+    />
   </div>
 </template>
 
@@ -34,13 +43,16 @@
 </style>
 
 <script setup lang="ts">
-import { provide } from "vue";
+import { provide, ref } from "vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";
 import {
   ApolloClient,
   createHttpLink,
   InMemoryCache,
 } from "@apollo/client/core";
+import PostItemModal from "./components/PostItemModal.vue";
+
+const showPostItemModal = ref(false);
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
