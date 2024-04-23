@@ -17,6 +17,16 @@ export const FETCH_ALL_ITEMS_QUERY = gql`
   }
 `;
 
+export const FETCH_ITEMS_BY_USERID_QUERY = gql`
+  query fetchItemsByUserId($userId: ID!) {
+    fetchItemsByUserId(userId: $userId) {
+      id
+      name
+      imageUrl
+    }
+  }
+`;
+
 export const CREATE_ITEM_MUTATION = gql`
   mutation createItem(
     $name: String!
@@ -34,7 +44,7 @@ export const CREATE_ITEM_MUTATION = gql`
       ownerId: $ownerId
       imageUrl: $imageUrl
     ) {
-      id 
+      id
     }
   }
 `;

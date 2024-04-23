@@ -10,14 +10,28 @@
     <b-overlay :show="isHandleRequestLoading" no-wrap />
     <b-form>
       <div class="form-container">
-        <div>
-          <b-form-group label="Message (optional)">
-            <b-form-textarea
-              v-model="form.message"
-              placeholder="Enter message..."
-            ></b-form-textarea>
-          </b-form-group>
-        </div>
+        <b-form-group label="Message (optional)" class="form-label">
+          <b-form-textarea
+            v-model="form.message"
+            placeholder="Enter message..."
+          ></b-form-textarea>
+        </b-form-group>
+        <b-form-group label="Select Items to Offer" class="form-label">
+          <div v-for="item in items" :key="item.id" class="item-checkbox">
+            <label class="d-flex align-items-center">
+            <input
+              :value="item.id"
+              v-model="form.offeredItemIds"
+              type="checkbox"
+              style="display: flex; flex-direction: row"
+            >
+          
+              <img :src="item.imageUrl" alt="item.name" class="item-image" />
+              <span style="font-weight: normal">{{ item.name }}</span>
+          </input>
+        </label>
+          </div>
+        </b-form-group>
       </div>
     </b-form>
     <template #modal-footer="{ Request, Cancel }">
@@ -28,12 +42,17 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, computed } from "vue";
-import { CREATE_ITEM_MUTATION } from "../control/ItemControl";
-import { useMutation } from "@vue/apollo-composable";
+import { ref, defineProps, defineEmits, computed, watch } from "vue";
+import {
+  CREATE_ITEM_MUTATION,
+  FETCH_ITEMS_BY_USERID_QUERY,
+} from "../control/ItemControl";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { CREATE_REQUEST_MUTATION } from "../control/RequestControl";
 
 const props = defineProps({
   show: Boolean,
+  item: Object,
 });
 
 const emits = defineEmits(["update:show"]);
@@ -49,10 +68,38 @@ function handleClose() {
 const isHandleRequestLoading = ref(false);
 
 async function handlePost() {
+  console.log(props.item);
   //TODO: form validation
   isHandleRequestLoading.value = true;
-  isHandleRequestLoading.value = false;
+  try {
+    const { mutate: createRequest } = useMutation(CREATE_REQUEST_MUTATION);
+    //FIXME: change to current user id in session
+    const result = await createRequest({
+      fromUserId: "66160060b952d66f702877d7",
+      toUserId: props.item.owner.id,
+      message: form.value.message,
+      wantItemId: props.item.id,
+      offeredItemIds: form.value.offeredItemIds,
+    });
+
+    if (result.data) {
+      console.log("Request created successfully", result.data);
+      handleClose();
+    }
+  } catch (e) {
+    console.log(e);
+    console.log(JSON.stringify(e, null, 2));
+  } finally {
+    isHandleRequestLoading.value = false;
+  }
 }
+
+//TODO: change to current user
+const { result, loading, error } = useQuery(FETCH_ITEMS_BY_USERID_QUERY, {
+  userId: "66160060b952d66f702877d7",
+});
+
+const items = computed(() => result.value?.fetchItemsByUserId || []);
 
 const form = ref({
   message: "",
@@ -66,7 +113,18 @@ const form = ref({
   align-items: center;
 }
 .form-container {
-  display: flex;
   width: 100%;
+}
+.item-checkbox {
+  display: flex;
+  align-items: center;
+}
+.item-image {
+  width: 20%;
+  margin-right: 2%;
+  margin-left: 2%;
+}
+.form-label {
+  font-weight: bold;
 }
 </style>

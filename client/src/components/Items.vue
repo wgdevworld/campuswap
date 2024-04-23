@@ -17,6 +17,7 @@
 
     <RequestTradeModal
       :show="showRequestTradeModal"
+      :item="selectedItem"
       @update:show="showRequestTradeModal = $event"
     />
 
@@ -45,7 +46,7 @@
               <div class="value">{{ item.usedFor }}</div>
             </div>
           </div>
-          <b-button @click="showRequestTradeModal = true" class="button" block
+          <b-button @click="setSelectedItem(item)" class="button" block
             >Request trade</b-button
           >
         </b-card>
@@ -90,6 +91,13 @@ import { ref } from "vue";
 import RequestTradeModal from "../components/RequestTradeModal.vue";
 
 const showRequestTradeModal = ref(false);
+
+const selectedItem = ref({});
+
+const setSelectedItem = (item: {}) => {
+  selectedItem.value = item;
+  showRequestTradeModal.value = true;
+}
 
 const { result } = useQuery(FETCH_ALL_ITEMS_QUERY);
 </script>

@@ -124,7 +124,7 @@ async function handlePost() {
       description: form.value.description,
       boughtFor: parseFloat(form.value.boughtFor),
       usedFor: form.value.usedFor,
-      ownerId: "66160060b952d66f702877d7",
+      ownerId: "6616cd89c4129187847e3c2c",
       imageUrl: imageUrl,
     });
 
