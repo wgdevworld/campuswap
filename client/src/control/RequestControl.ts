@@ -19,3 +19,29 @@ mutation createRequest(
     }
 }
 `;
+
+export const FETCH_RECEIVED_REQUESTS_QUERY = gql`
+    query fetchReceivedRequests($userId: ID!) {
+        fetchReceivedRequests(userId: $userId) {
+            id
+            fromUser {
+              email
+              contactInfo
+            }
+            toUser {
+              email
+            }
+            message
+            wantItem {
+              imageUrl
+            }
+            offeredItems {
+              name
+              description
+              boughtFor
+              usedFor
+              imageUrl
+            }
+        }
+    }
+`

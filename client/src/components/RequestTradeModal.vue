@@ -77,7 +77,7 @@ async function handlePost() {
     const result = await createRequest({
       fromUserId: "66160060b952d66f702877d7",
       toUserId: props.item.owner.id,
-      message: form.value.message,
+      message: form.value.message ? form.value.message : null,
       wantItemId: props.item.id,
       offeredItemIds: form.value.offeredItemIds,
     });

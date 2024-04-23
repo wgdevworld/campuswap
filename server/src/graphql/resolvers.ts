@@ -36,10 +36,8 @@ export const resolvers = {
       return Request.find({})
         .populate("fromUser")
         .populate("toUser")
-        .populate({
-          path: "items",
-          populate: { path: "owner" },
-        });
+        .populate("wantItem")
+        .populate("offeredItems");
     },
     fetchRequestById: async (
       _: any,
@@ -48,10 +46,8 @@ export const resolvers = {
       return Request.findById(id)
         .populate("fromUser")
         .populate("toUser")
-        .populate({
-          path: "items",
-          populate: { path: "owner" },
-        });
+        .populate("wantItem")
+        .populate("offeredItems");
     },
     fetchSentRequests: async (
       _: any,
@@ -60,10 +56,8 @@ export const resolvers = {
       return Request.find({ fromUser: userId })
         .populate("fromUser")
         .populate("toUser")
-        .populate({
-          path: "items",
-          populate: { path: "owner" },
-        });
+        .populate("wantItem")
+        .populate("offeredItems");
     },
 
     fetchReceivedRequests: async (
@@ -73,10 +67,8 @@ export const resolvers = {
       return Request.find({ toUser: userId })
         .populate("fromUser")
         .populate("toUser")
-        .populate({
-          path: "items",
-          populate: { path: "owner" },
-        });
+        .populate("wantItem")
+        .populate("offeredItems");
     },
   },
   Mutation: {

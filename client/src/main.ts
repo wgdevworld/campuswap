@@ -6,12 +6,12 @@ import "./style.css";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
-import HelloWorld from "./components/HelloWorld.vue";
+import Requests from "./components/Requests.vue";
 import Items from "./components/Items.vue";
 
 const routes = [
   { path: "/", component: Items },
-  { path: "/requests", component: HelloWorld },
+  { path: "/requests", component: Requests },
 ];
 
 const router = createRouter({
