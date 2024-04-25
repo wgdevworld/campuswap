@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "brew services start mongodb-community@7.0 ; nodemon --exec './node_modules/.bin/ts-node' src/app.ts",
+    "dbstart": "mongod --port 27017 --dbpath /usr/local/var/mongodb --replSet rs0 --bind_ip localhost",
+    "dev": "nodemon --exec './node_modules/.bin/ts-node' src/app.ts",
     "dbstop": "brew services stop mongodb-community@7.0"
   },
   "keywords": [],

@@ -7,6 +7,9 @@
     class="modal"
     body-class="position-static"
   >
+    <div v-if="props.message" class="message-container">
+      <p>Request message: {{ props.message }}</p>
+    </div>
     <div class="item-details">
       <p>Description: {{ props.item.description }}</p>
       <p>Bought for: ${{ props.item.boughtFor }}</p>
@@ -21,6 +24,7 @@ import { defineProps, defineEmits } from "vue";
 const props = defineProps({
   show: Boolean,
   item: Object,
+  message: String,
 });
 
 const emits = defineEmits(["update:show"]);
@@ -34,5 +38,9 @@ function handleClose() {
 .modal {
   justify-content: space-between;
   align-items: center;
+}
+.message-container {
+  border-color: black;
+  border-width: 1rem;
 }
 </style>

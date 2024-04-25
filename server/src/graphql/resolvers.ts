@@ -1,6 +1,7 @@
 import User, { IUser } from "../models/User";
 import Item, { IItem } from "../models/Item";
 import Request, { IRequest } from "../models/Request";
+import mongoose from "mongoose";
 
 export const resolvers = {
   Query: {
@@ -198,6 +199,50 @@ export const resolvers = {
         throw new Error("Request not found");
       }
       return deletedRequest;
+    },
+    acceptRequest: async (
+      _: any,
+      { requestId }: { requestId: string }
+    ): Promise<IRequest | null> => {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+      try {
+        const acceptedRequest = await Request.findById(requestId).session(
+          session
+        );
+        if (!acceptedRequest) {
+          throw new Error("Request not found");
+        }
+        await Item.deleteMany({
+          _id: { $in: acceptedRequest.offeredItems },
+        }).session(session);
+
+        // Delete items that match wantItem
+        await Item.deleteMany({
+          _id: acceptedRequest.wantItem,
+        }).session(session);
+
+        await Request.deleteMany({
+          wantItem: { $in: acceptedRequest.offeredItems },
+        }).session(session);
+        await Request.deleteMany({
+          wantItem: acceptedRequest.wantItem,
+        }).session(session);
+        await Request.deleteMany({
+          offeredItems: { $in: acceptedRequest.offeredItems },
+        }).session(session);
+        await Request.deleteMany({
+          offeredItems: acceptedRequest.wantItem,
+        }).session(session);
+        await Request.findByIdAndDelete(requestId).session(session);
+        await session.commitTransaction();
+        return acceptedRequest;
+      } catch (error) {
+        await session.abortTransaction();
+        throw error;
+      } finally {
+        session.endSession();
+      }
     },
   },
 };

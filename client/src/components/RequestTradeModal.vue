@@ -75,7 +75,7 @@ async function handlePost() {
     const { mutate: createRequest } = useMutation(CREATE_REQUEST_MUTATION);
     //FIXME: change to current user id in session
     const result = await createRequest({
-      fromUserId: "66160060b952d66f702877d7",
+      fromUserId: "662aa37232948d2f771ce576",
       toUserId: props.item.owner.id,
       message: form.value.message ? form.value.message : null,
       wantItemId: props.item.id,
@@ -96,7 +96,7 @@ async function handlePost() {
 
 //TODO: change to current user
 const { result, loading, error } = useQuery(FETCH_ITEMS_BY_USERID_QUERY, {
-  userId: "66160060b952d66f702877d7",
+  userId: "662aa37232948d2f771ce576",
 });
 
 const items = computed(() => result.value?.fetchItemsByUserId || []);

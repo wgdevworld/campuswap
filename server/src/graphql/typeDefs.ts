@@ -59,5 +59,6 @@ export const typeDefs = gql`
     deleteUser(id: ID!): User!
     deleteItem(id: ID!): Item!
     deleteRequest(id: ID!): Request!
+    acceptRequest(requestId: ID!): Request!
   }
 `;

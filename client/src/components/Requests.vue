@@ -3,6 +3,7 @@
     <ItemDetailsModal
       :show="showItemDetailModal"
       :item="selectedItem"
+      :message="requestMessage"
       @update:show="showItemDetailModal = $event"
     />
     <div
@@ -30,11 +31,13 @@
               :src="offeredItem.imageUrl"
               class="offered-item-image"
               alt="Offered Item Image"
-              @click="setSelectedItem(offeredItem)"
+              @click="setSelectedItem(offeredItem, request.message)"
             />
           </div>
         </div>
-        <button class="btn-accept">Accept to see contact info</button>
+        <b-button @click="handleAcceptRequest(request)" class="btn-accept"
+          >Accept to see contact info</b-button
+        >
       </div>
     </div>
     <div v-else class="no-requests">
@@ -132,21 +135,46 @@
 </style>
 
 <script setup lang="ts">
-import { useQuery } from "@vue/apollo-composable";
-import { FETCH_RECEIVED_REQUESTS_QUERY } from "../control/RequestControl";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import {
+  ACCEPT_REQUEST_MUTATION,
+  FETCH_RECEIVED_REQUESTS_QUERY,
+} from "../control/RequestControl";
 import ItemDetailsModal from "../components/ItemDetailsModal.vue";
 import { ref } from "vue";
 
 const { result } = useQuery(FETCH_RECEIVED_REQUESTS_QUERY, {
-  userId: "6616cd89c4129187847e3c2c",
+  userId: "662aa43af308d5793e4aecca",
 });
 
-const selectedItem = ref({});
+const { mutate: acceptRequest } = useMutation(ACCEPT_REQUEST_MUTATION);
 
-const setSelectedItem = (item) => {
-  console.log(item);
+const selectedItem = ref({});
+const requestMessage = ref("");
+
+const setSelectedItem = (item: {}, message: "") => {
+  requestMessage.value = message;
   selectedItem.value = item;
   showItemDetailModal.value = true;
+};
+
+const handleAcceptRequest = async (request) => {
+  try {
+    const result = await acceptRequest({
+      requestId: request.id,
+    });
+    if (result && result.data) {
+      console.log("Item created successfully", result.data);
+      alert(`The contact information is: ${request.fromUser.contactInfo}`);
+    }
+  } catch (e) {
+    console.log(e);
+    console.log(JSON.stringify(e, null, 2));
+  }
+
+  // delete request
+  // delete all items
+  // show modal with contact information
 };
 
 const showItemDetailModal = ref(false);
