@@ -2,6 +2,9 @@ import User, { IUser } from "../models/User";
 import Item, { IItem } from "../models/Item";
 import Request, { IRequest } from "../models/Request";
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import nodemailer from "nodemailer";
+require("dotenv").config();
 
 export const resolvers = {
   Query: {
@@ -82,8 +85,40 @@ export const resolvers = {
         contactInfo,
       }: { email: string; password: string; contactInfo: string }
     ): Promise<IUser> => {
-      const newUser = new User({ email, password, contactInfo });
-      return newUser.save();
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      const newUser = new User({
+        email,
+        password: hashedPassword,
+        contactInfo,
+        verified: false,
+      });
+      const savedUser = await newUser.save();
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.GOOGLE_MAIL,
+          pass: process.env.GOOGLE_APP_KEY,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.GOOGLE_MAIL,
+        to: email,
+        subject: "CampuSwap: Verify Your Email",
+        text: `Please verify your email by clicking on the following link: http://localhost:8090/verify/${savedUser._id}`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log("Error sending email:", error);
+        } else {
+          console.log("Verification email sent:", info.response);
+        }
+      });
+
+      return savedUser;
     },
     deleteUser: async (
       _: any,

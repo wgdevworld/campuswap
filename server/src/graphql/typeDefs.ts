@@ -6,6 +6,7 @@ export const typeDefs = gql`
     email: String!
     contactInfo: String!
     items: [Item!]!
+    verified: Boolean!
   }
 
   type Item {
