@@ -11,36 +11,55 @@ import bcrypt from "bcryptjs";
 import MongoStore from "connect-mongo";
 import passport from "passport";
 import passportlocal from "passport-local";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import bodyParser from "body-parser";
+import pino from "pino";
+import expressPinoLogger from "express-pino-logger";
+
 require("dotenv").config();
 
 const startServer = async () => {
   const app = express();
-  const session = require("express-session");
+  app.use(
+    cors({
+      credentials: true,
+      origin: "http://localhost:8090",
+    })
+  );
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(cookieParser());
   app.use(
     session({
-      secret: process.env.SESSION_SECRET,
+      secret: process.env.SESSION_SECRET as string,
       resave: false,
       saveUninitialized: true,
       store: MongoStore.create({
         mongoUrl: "mongodb://localhost:27017/campuswap",
+        ttl: 14 * 24 * 60 * 60, // 14 days
       }),
       cookie: { secure: false },
     })
   );
 
+  const logger = pino({ transport: { target: "pino-pretty" } });
+  //@ts-ignore
+  app.use(expressPinoLogger({ logger }));
+
   app.use(passport.initialize());
   app.use(passport.session());
-  const upload = multer({ dest: "uploads/" });
 
-  await connectDB();
-
-  const apolloServer = new ApolloServer({
-    typeDefs,
-    resolvers,
-    introspection: true,
+  passport.serializeUser((user, done) => {
+    console.log("serializeUser", user);
+    done(null, user);
   });
-  await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
+  passport.deserializeUser((user, done) => {
+    console.log("deserializeUser", user);
+    //@ts-ignore
+    done(null, user);
+  });
 
   const LocalStrategy = passportlocal.Strategy;
 
@@ -48,8 +67,10 @@ const startServer = async () => {
     new LocalStrategy(
       {
         usernameField: "email",
+        passwordField: "password",
       },
       async (email, password, done) => {
+        console.log(email, password);
         try {
           const user = await User.findOne({ email });
           if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -66,15 +87,30 @@ const startServer = async () => {
     )
   );
 
-  passport.serializeUser((user, done) => {
-    done(null, user);
-  });
+  const upload = multer({ dest: "uploads/" });
 
-  passport.deserializeUser((id, done) => {
-    User.findById(id, (err: Error, user: IUser | null) => {
-      done(err, user);
-    });
+  await connectDB();
+
+  const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    introspection: true,
+    formatError: (err) => {
+      // Log the error to console for debugging
+      console.error(err);
+      return err;
+    },
+    context: ({ req, res }) => {
+      console.log("authenticating...");
+      if (!req.isAuthenticated()) {
+        console.error("Authentication failed");
+        throw new Error("You must be logged in to access this resource.");
+      }
+      return { user: req.user };
+    },
   });
+  await apolloServer.start();
+  apolloServer.applyMiddleware({ app, cors: false});
 
   const PORT = process.env.PORT || 4000;
   app
@@ -91,6 +127,10 @@ const startServer = async () => {
   });
   app.get("/playground", expressPlayground({ endpoint: "/graphql" }));
   app.post("/api/upload", upload.single("file"), async (req, res) => {
+    if (!req.isAuthenticated()) {
+      res.status(401).json({ error: "Please log in" });
+      return;
+    }
     try {
       const file = req.file;
       if (!file) {
@@ -118,13 +158,11 @@ const startServer = async () => {
       res.status(500).send("An error occurred during verification.");
     }
   });
-
   app.post(
     "/api/login",
-    passport.authenticate("local", { failureRedirect: "/login" }),
-    (req, res) => {
-      res.redirect("/");
-    }
+    passport.authenticate("local", {
+      successReturnToOrRedirect: "/",
+    })
   );
 };
 
