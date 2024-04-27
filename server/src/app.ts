@@ -96,21 +96,23 @@ const startServer = async () => {
     resolvers,
     introspection: true,
     formatError: (err) => {
-      // Log the error to console for debugging
+      if (err.message === "Unauthenticated!") {
+        return new Error("Authentication required");
+      }
       console.error(err);
       return err;
     },
-    context: ({ req, res }) => {
+    context: ({ req }) => {
       console.log("authenticating...");
       if (!req.isAuthenticated()) {
         console.error("Authentication failed");
-        throw new Error("You must be logged in to access this resource.");
+        throw new Error("Unauthenticated!");
       }
       return { user: req.user };
     },
   });
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app, cors: false});
+  apolloServer.applyMiddleware({ app, cors: false });
 
   const PORT = process.env.PORT || 4000;
   app
@@ -164,6 +166,21 @@ const startServer = async () => {
       successReturnToOrRedirect: "/",
     })
   );
+  app.post("/api/logout", (req, res, next) => {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      req.session.destroy((err) => {
+        if (err) {
+          console.error("Failed to destroy the session during logout", err);
+          return next(err);
+        }
+        res.clearCookie("connect.sid");
+        res.send("Logged out successfully");
+      });
+    });
+  });
 };
 
 startServer();

@@ -12,6 +12,9 @@
         <b-button href="/requests" class="nav-bar-button"
           >View Requests</b-button
         >
+        <b-button href="#" class="nav-bar-button" @click="logout"
+          >Log Out</b-button
+        >
       </b-navbar-nav>
     </b-navbar>
 
@@ -50,22 +53,55 @@ import {
 } from "@vue/apollo-composable";
 import {
   ApolloClient,
+  ApolloLink,
   createHttpLink,
   InMemoryCache,
 } from "@apollo/client/core";
+import { onError } from "@apollo/client/link/error";
 import PostItemModal from "./components/PostItemModal.vue";
 
 const showPostItemModal = ref(false);
 
+const errorLink = onError(({ graphQLErrors }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message }) => {
+      console.log(message);
+      if (message === "Context creation failed: Unauthenticated!") {
+        window.location.href = "/login";
+      }
+    });
+  }
+});
+
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
-  credentials: 'include',
+  credentials: "include",
 });
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({
-  link: httpLink,
+  link: ApolloLink.from([
+    errorLink,
+    httpLink,
+  ]),
   cache,
 });
+
+const logout = async () => {
+  try {
+    const response = await fetch("/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    if (response.ok) {
+      console.log(response);
+      window.location.href = "/login";
+    } else {
+      console.error("Logout failed:", await response.text());
+    }
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+};
 
 provide(DefaultApolloClient, apolloClient);
 provideApolloClient(apolloClient);
