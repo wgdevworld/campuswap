@@ -4,14 +4,31 @@
       <form @submit.prevent="login">
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" class="form-control" id="email" required />
+          <input
+            v-model="email"
+            type="email"
+            class="form-control"
+            id="email"
+            required
+          />
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" class="form-control" id="password" required />
+          <input
+            vmodel="password "
+            type="password"
+            class="form-control"
+            id="password"
+            required
+          />
         </div>
         <b-button type="submit" variant="primary" class="btn">Log In</b-button>
-        <b-button type="button" href="/signup" variant="outline-primary" class="btn">
+        <b-button
+          type="button"
+          href="/signup"
+          variant="outline-primary"
+          class="btn"
+        >
           Sign Up
         </b-button>
       </form>
@@ -21,13 +38,37 @@
 
 <style scoped>
 .btn {
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
 }
 </style>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import axios from "axios";
+
+const email = ref("");
+const password = ref("");
+
 const login = async () => {
-  //do nothing
+  const formData = new FormData();
+  formData.append("email", email.value);
+  formData.append("password", password.value);
+
+  try {
+    const response = await fetch("/api/login", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      window.location.href = "/";
+    } else {
+      console.error("Login failed:", await response.text());
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+  }
 };
 </script>
