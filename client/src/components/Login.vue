@@ -15,7 +15,7 @@
         <div class="form-group">
           <label for="password">Password</label>
           <input
-            vmodel="password "
+            v-model="password"
             type="password"
             class="form-control"
             id="password"
@@ -45,23 +45,21 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import axios from "axios";
 
 const email = ref("");
 const password = ref("");
 
 const login = async () => {
-  const formData = new FormData();
-  formData.append("email", email.value);
-  formData.append("password", password.value);
-
   try {
     const response = await fetch("/api/login", {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email.value, password: password.value }),
       credentials: "include",
     });
-
+    console.log(response);
     if (response.ok) {
       window.location.href = "/";
     } else {

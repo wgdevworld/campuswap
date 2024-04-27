@@ -114,8 +114,12 @@ async function handlePost() {
     const response = await fetch("/api/upload", {
       method: "POST",
       body: formData,
+      credentials: "include",
     });
     const res = await response.json();
+    if (res.error) {
+      throw Error("File upload failed");
+    }
     const imageUrl = res.imageUrl;
 
     const { mutate: createItem } = useMutation(CREATE_ITEM_MUTATION);
@@ -133,7 +137,8 @@ async function handlePost() {
       handleClose();
     }
   } catch (e) {
-    console.log(JSON.stringify(e, null, 2));
+    console.log(e);
+    // console.log(JSON.stringify(e, null, 2));
   } finally {
     isHandlePostLoading.value = false;
   }

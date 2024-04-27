@@ -59,6 +59,7 @@ const showPostItemModal = ref(false);
 
 const httpLink = createHttpLink({
   uri: "http://localhost:4000/graphql",
+  credentials: 'include',
 });
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({
