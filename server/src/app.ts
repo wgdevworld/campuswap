@@ -6,7 +6,7 @@ import connectDB from "./config/db";
 import multer from "multer";
 import expressPlayground from "graphql-playground-middleware-express";
 import { uploadToFirebaseStorage } from "./config/GoogleCloud";
-import User, { IUser } from "./models/User";
+import User from "./models/User";
 import bcrypt from "bcryptjs";
 import MongoStore from "connect-mongo";
 import passport from "passport";
@@ -104,11 +104,7 @@ const startServer = async () => {
     },
     context: ({ req }) => {
       console.log("authenticating...");
-      if (!req.isAuthenticated()) {
-        console.error("Authentication failed");
-        throw new Error("Unauthenticated!");
-      }
-      return { user: req.user };
+      return { req };
     },
   });
   await apolloServer.start();
@@ -160,12 +156,11 @@ const startServer = async () => {
       res.status(500).send("An error occurred during verification.");
     }
   });
-  app.post(
-    "/api/login",
-    passport.authenticate("local", {
-      successReturnToOrRedirect: "/",
-    })
-  );
+  app.post("/api/login", passport.authenticate("local"), (req, res) => {
+    res.json({
+      user: req.user,
+    });
+  });
   app.post("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) {

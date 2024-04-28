@@ -14,24 +14,39 @@ export const resolvers = {
     },
     fetchUserById: async (
       _: any,
-      { id }: { id: string }
-    ): Promise<IUser | null> => {
+      { id }: { id: string },
+      { req }: { req: any }
+    ) => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       return User.findById(id);
     },
     //ITEM queries
-    fetchAllItems: async (): Promise<IItem[]> => {
+    fetchAllItems: async (_: any, { id }: { id: string }, { req }: { req: any }): Promise<IItem[]> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       return Item.find({}).populate("owner");
     },
     fetchItemById: async (
       _: any,
-      { id }: { id: string }
+      { id }: { id: string },
+      { req }: { req: any }
     ): Promise<IItem | null> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       return Item.findById(id).populate("owner");
     },
     fetchItemsByUserId: async (
       _: any,
-      { userId }: { userId: string }
+      { userId }: { userId: string },
+      { req }: { req: any }
     ): Promise<IItem[]> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       const items = await Item.find({ owner: userId }).populate("owner");
       return items;
     },
@@ -45,8 +60,12 @@ export const resolvers = {
     },
     fetchRequestById: async (
       _: any,
-      { id }: { id: string }
+      { id }: { id: string },
+      { req }: { req: any }
     ): Promise<IRequest | null> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       return Request.findById(id)
         .populate("fromUser")
         .populate("toUser")
@@ -55,8 +74,12 @@ export const resolvers = {
     },
     fetchSentRequests: async (
       _: any,
-      { userId }: { userId: string }
+      { userId }: { userId: string },
+      { req }: { req: any }
     ): Promise<IRequest[]> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       return Request.find({ fromUser: userId })
         .populate("fromUser")
         .populate("toUser")
@@ -66,8 +89,12 @@ export const resolvers = {
 
     fetchReceivedRequests: async (
       _: any,
-      { userId }: { userId: string }
+      { userId }: { userId: string },
+      { req }: { req: any }
     ): Promise<IRequest[]> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       return Request.find({ toUser: userId })
         .populate("fromUser")
         .populate("toUser")
@@ -122,8 +149,12 @@ export const resolvers = {
     },
     deleteUser: async (
       _: any,
-      { id }: { id: string }
+      { id }: { id: string },
+      { req }: { req: any }
     ): Promise<IUser | null> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       const deletedUser = await User.findByIdAndDelete(id);
       if (!deletedUser) {
         throw new Error("User not found");
@@ -147,8 +178,12 @@ export const resolvers = {
         usedFor: string;
         ownerId: string;
         imageUrl: string;
-      }
+      },
+      { req }: { req: any }
     ): Promise<IItem | null> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       const newItem = new Item({
         name,
         description,
@@ -166,8 +201,12 @@ export const resolvers = {
     },
     deleteItem: async (
       _: any,
-      { id }: { id: string }
+      { id }: { id: string },
+      { req }: { req: any }
     ): Promise<IItem | null> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       const deletedItem = await Item.findByIdAndDelete(id).populate("owner");
       if (!deletedItem) {
         throw new Error("Item not found");
@@ -189,8 +228,12 @@ export const resolvers = {
         message?: string;
         wantItemId: string;
         offeredItemIds: string[];
-      }
+      },
+      { req }: { req: any }
     ): Promise<IRequest | null> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       const fromUser = await User.findById(fromUserId);
       const toUser = await User.findById(toUserId);
       if (!fromUser || !toUser) {
@@ -227,8 +270,12 @@ export const resolvers = {
     },
     deleteRequest: async (
       _: any,
-      { id }: { id: string }
+      { id }: { id: string },
+      { req }: { req: any }
     ): Promise<IRequest | null> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       const deletedRequest = await Request.findByIdAndDelete(id);
       if (!deletedRequest) {
         throw new Error("Request not found");
@@ -237,8 +284,12 @@ export const resolvers = {
     },
     acceptRequest: async (
       _: any,
-      { requestId }: { requestId: string }
+      { requestId }: { requestId: string },
+      { req }: { req: any }
     ): Promise<IRequest | null> => {
+      if (!req.user) {
+        throw new Error("Authentication required");
+      }
       const session = await mongoose.startSession();
       session.startTransaction();
       try {

@@ -59,8 +59,10 @@ const login = async () => {
       body: JSON.stringify({ email: email.value, password: password.value }),
       credentials: "include",
     });
-    console.log(response);
     if (response.ok) {
+      const data = await response.json();
+      console.log(data.user._id);
+      localStorage.setItem("userId", data.user._id);
       window.location.href = "/";
     } else {
       console.error("Login failed:", await response.text());

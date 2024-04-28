@@ -107,7 +107,6 @@ async function handlePost() {
   //TODO: form validation
   isHandlePostLoading.value = true;
 
-  //FIXME: change to current user after sessions
   try {
     const formData = new FormData();
     formData.append("file", form.value.photo);
@@ -128,7 +127,7 @@ async function handlePost() {
       description: form.value.description,
       boughtFor: parseFloat(form.value.boughtFor),
       usedFor: form.value.usedFor,
-      ownerId: "662aa37232948d2f771ce576",
+      ownerId: localStorage.getItem('userId'),
       imageUrl: imageUrl,
     });
 

@@ -144,7 +144,7 @@ import ItemDetailsModal from "../components/ItemDetailsModal.vue";
 import { ref } from "vue";
 
 const { result } = useQuery(FETCH_RECEIVED_REQUESTS_QUERY, {
-  userId: "662aa43af308d5793e4aecca",
+  userId: localStorage.getItem('userId')
 });
 
 const { mutate: acceptRequest } = useMutation(ACCEPT_REQUEST_MUTATION);

@@ -68,7 +68,7 @@ const handleSignup = async () => {
     if (result && result.data) {
       console.log("User created successfully", result.data);
       alert("Please check your email to verify your email.");
-      router.push("/");
+      // router.push("/");
     }
   } catch (e) {
     console.log(e);
