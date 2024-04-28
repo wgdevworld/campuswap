@@ -93,6 +93,7 @@ const logout = async () => {
       credentials: "include",
     });
     if (response.ok) {
+      localStorage.clear();
       window.location.href = "/login";
     } else {
       console.error("Logout failed:", await response.text());
