@@ -68,8 +68,10 @@ function handleClose() {
 const isHandleRequestLoading = ref(false);
 
 async function handlePost() {
-  console.log(props.item);
-  //TODO: form validation
+  if (form.value.offeredItemIds.length === 0) {
+    alert("Please select at least one item to trade.");
+    return;
+  }
   isHandleRequestLoading.value = true;
   try {
     const { mutate: createRequest } = useMutation(CREATE_REQUEST_MUTATION);

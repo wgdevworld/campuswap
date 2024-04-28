@@ -104,7 +104,14 @@ function handleClose() {
 const isHandlePostLoading = ref(false);
 
 async function handlePost() {
-  //TODO: form validation
+  if (!form.value.photo) {
+    alert("Please upload a photo.");
+    return;
+  }
+  if (!form.value.name || form.value.boughtFor <= 0 || !form.value.usedFor) {
+    alert("Please fill out all required fields.");
+    return;
+  }
   isHandlePostLoading.value = true;
 
   try {
@@ -127,7 +134,7 @@ async function handlePost() {
       description: form.value.description,
       boughtFor: parseFloat(form.value.boughtFor),
       usedFor: form.value.usedFor,
-      ownerId: localStorage.getItem('userId'),
+      ownerId: localStorage.getItem("userId"),
       imageUrl: imageUrl,
     });
 

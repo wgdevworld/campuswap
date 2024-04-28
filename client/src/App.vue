@@ -66,7 +66,7 @@ const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message }) => {
       console.log(message);
-      if (message === "Context creation failed: Unauthenticated!") {
+      if (message === "Authentication required") {
         window.location.href = "/login";
       }
     });

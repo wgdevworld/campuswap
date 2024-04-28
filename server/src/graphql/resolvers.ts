@@ -12,7 +12,7 @@ export const resolvers = {
     fetchAllUsers: async (): Promise<IUser[]> => {
       return User.find({});
     },
-    fetchUserById: async (
+    fetchUserById: async (  
       _: any,
       { id }: { id: string },
       { req }: { req: any }
