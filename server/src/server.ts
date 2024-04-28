@@ -37,7 +37,7 @@ const startServer = async () => {
       resave: false,
       saveUninitialized: true,
       store: MongoStore.create({
-        mongoUrl: "mongodb://localhost:27017/campuswap",
+        mongoUrl: "mongodb://localhost:27017/campuswap?replicaSet=rs0",
         ttl: 14 * 24 * 60 * 60, // 14 days
       }),
       cookie: { secure: false },

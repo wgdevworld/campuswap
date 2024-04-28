@@ -158,7 +158,7 @@ const setSelectedItem = (item: {}, message: "") => {
   showItemDetailModal.value = true;
 };
 
-const handleAcceptRequest = async (request) => {
+const handleAcceptRequest = async (request: any) => {
   try {
     const result = await acceptRequest({
       requestId: request.id,
