@@ -6,6 +6,7 @@ build({
   outdir: "dist",
   platform: "node",
   format: "cjs",
+  keepNames: true,
   bundle: true,
   plugins: [esbuildPluginPino({ transports: ["pino-pretty"] })],
 }).catch(() => process.exit(1));

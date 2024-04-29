@@ -22,12 +22,12 @@ require("dotenv").config();
 
 const startServer = async () => {
   const app = express();
-  // app.use(
-  //   cors({
-  //     credentials: true,
-  //     origin: "http://localhost:8090",
-  //   })
-  // );
+  app.use(
+    cors({
+      credentials: true,
+      origin: "http://localhost:31000",
+    })
+  );
 
   const DB_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/campuswap";
   console.log(DB_URL);
@@ -153,7 +153,7 @@ const startServer = async () => {
       } else {
         user.verified = true;
         await user.save();
-        res.redirect(302, "http://localhost:8090/login");
+        res.redirect(302, "http://localhost:31000/login");
       }
     } catch (error) {
       res.status(500).send("An error occurred during verification.");

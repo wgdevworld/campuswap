@@ -138,7 +138,7 @@ export const resolvers = {
         from: process.env.GOOGLE_MAIL,
         to: email,
         subject: "CampuSwap: Verify Your Email",
-        text: `Please verify your email by clicking on the following link: http://localhost:4000/verify?token=${savedUser._id}`,
+        text: `Please verify your email by clicking on the following link: http://localhost:31001/verify?token=${savedUser._id}`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
