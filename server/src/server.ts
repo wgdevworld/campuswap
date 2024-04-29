@@ -22,12 +22,15 @@ require("dotenv").config();
 
 const startServer = async () => {
   const app = express();
-  app.use(
-    cors({
-      credentials: true,
-      origin: "http://localhost:8090",
-    })
-  );
+  // app.use(
+  //   cors({
+  //     credentials: true,
+  //     origin: "http://localhost:8090",
+  //   })
+  // );
+
+  const DB_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/campuswap";
+  console.log(DB_URL);
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
@@ -37,7 +40,7 @@ const startServer = async () => {
       resave: false,
       saveUninitialized: true,
       store: MongoStore.create({
-        mongoUrl: "mongodb://localhost:27017/campuswap?replicaSet=rs0",
+        mongoUrl: DB_URL,
         ttl: 14 * 24 * 60 * 60, // 14 days
       }),
       cookie: { secure: false },

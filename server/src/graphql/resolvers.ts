@@ -12,7 +12,7 @@ export const resolvers = {
     fetchAllUsers: async (): Promise<IUser[]> => {
       return User.find({});
     },
-    fetchUserById: async (  
+    fetchUserById: async (
       _: any,
       { id }: { id: string },
       { req }: { req: any }
@@ -23,7 +23,11 @@ export const resolvers = {
       return User.findById(id);
     },
     //ITEM queries
-    fetchAllItems: async (_: any, { id }: { id: string }, { req }: { req: any }): Promise<IItem[]> => {
+    fetchAllItems: async (
+      _: any,
+      { id }: { id: string },
+      { req }: { req: any }
+    ): Promise<IItem[]> => {
       if (!req.user) {
         throw new Error("Authentication required");
       }
@@ -290,44 +294,42 @@ export const resolvers = {
       if (!req.user) {
         throw new Error("Authentication required");
       }
-      const session = await mongoose.startSession();
-      session.startTransaction();
+
       try {
-        const acceptedRequest = await Request.findById(requestId).session(
-          session
-        );
+        const acceptedRequest = await Request.findById(requestId);
         if (!acceptedRequest) {
           throw new Error("Request not found");
         }
+
         await Item.deleteMany({
           _id: { $in: acceptedRequest.offeredItems },
-        }).session(session);
+        });
 
-        // Delete items that match wantItem
         await Item.deleteMany({
           _id: acceptedRequest.wantItem,
-        }).session(session);
+        });
 
         await Request.deleteMany({
           wantItem: { $in: acceptedRequest.offeredItems },
-        }).session(session);
+        });
+
         await Request.deleteMany({
           wantItem: acceptedRequest.wantItem,
-        }).session(session);
+        });
+
         await Request.deleteMany({
           offeredItems: { $in: acceptedRequest.offeredItems },
-        }).session(session);
+        });
+
         await Request.deleteMany({
           offeredItems: acceptedRequest.wantItem,
-        }).session(session);
-        await Request.findByIdAndDelete(requestId).session(session);
-        await session.commitTransaction();
+        });
+
+        await Request.findByIdAndDelete(requestId);
+
         return acceptedRequest;
       } catch (error) {
-        await session.abortTransaction();
         throw error;
-      } finally {
-        session.endSession();
       }
     },
   },

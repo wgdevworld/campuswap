@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: server
+  name: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+      - image: campuswap-server
+        name: server
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 4000
+          name: server
+        env:
+        - name: MONGO_URL
+          value: mongodb://db
+        - name: GOOGLE_MAIL
+          value: jinwoonggyu@gmail.com
+        - name: GOOGLE_APP_KEY
+          value: mwki ifxy fgda dnus
+        - name: SESSION_SECRET
+          value: lalalalllalmaalja
